@@ -52,9 +52,16 @@ ANP_URLS = {
         "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/"
         "arquivos/dadosabertos/sdl/planilha-aea-filiais.csv"
     ),
-    "tancagem_nacional_base": (
+    # Tancagem é publicada em arquivos mensais; a URL base referencia a
+    # página de listagem. Download automático requer scraping desta página.
+    "tancagem_base": (
         "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/"
-        "arquivos/abast-nac-comb/tancagem/"
+        "tancagem-do-abastecimento-nacional-de-combustiveis"
+    ),
+    # SIMP: exportação disponível via portal de dados abertos da ANP
+    "simp_base": (
+        "https://www.gov.br/anp/pt-br/assuntos/producao-e-fornecimento-de-"
+        "biocombustiveis/simp-sistema-de-informacoes-de-movimentacoes-de-produtos-1"
     ),
 }
 
