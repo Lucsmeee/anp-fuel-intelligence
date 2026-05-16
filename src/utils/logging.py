@@ -32,8 +32,11 @@ def _configure_root_logger() -> None:
 
     formatter = logging.Formatter(_LOG_FORMAT, datefmt=_DATE_FORMAT)
 
-    # Saída no console (stdout)
-    stream_handler = logging.StreamHandler(sys.stdout)
+    # Saída no console (stdout) com UTF-8 explícito para suportar
+    # caracteres especiais em terminais Windows (cp1252 por padrão).
+    stream_handler = logging.StreamHandler(
+        open(sys.stdout.fileno(), mode="w", encoding="utf-8", closefd=False)
+    )
     stream_handler.setFormatter(formatter)
     root.addHandler(stream_handler)
 
