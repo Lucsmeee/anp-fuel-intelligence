@@ -45,6 +45,10 @@ def transform_tancagem() -> tuple[pd.DataFrame, pd.DataFrame]:
     df = pd.read_parquet(INTERIM_DIR / "tancagem.parquet")
     logger.info("Tancagem base: %d tanques", len(df))
 
+    # Grupo de produtos: NULL vira 'NAO INFORMADO' para permitir uso
+    # como parte de chave composta no modelo relacional.
+    df["grupo_produtos"] = df["grupo_produtos"].fillna("NAO INFORMADO")
+
     # Flag: instalação pertence ao ramo de distribuição de combustíveis
     df["is_distribuicao"] = df["segmento"].isin(_SEGMENTOS_DISTRIBUICAO)
 
@@ -66,13 +70,19 @@ def transform_tancagem() -> tuple[pd.DataFrame, pd.DataFrame]:
     )
 
     # --- Nível 2: agregado por (cnpj, segmento, grupo_produtos) ---
+    # uf e municipio são excluídos das chaves de agrupamento porque uma mesma
+    # empresa pode ter instalações em múltiplos municípios com o mesmo segmento
+    # e produto — incluí-los criaria duplicatas para a PK composta no banco.
+    # nome_empresarial e uf são obtidos via first() como metadado representativo.
     agregada = (
         df.groupby(
-            ["cnpj", "nome_empresarial", "uf", "municipio",
-             "segmento", "grupo_produtos", "is_distribuicao"],
+            ["cnpj", "segmento", "grupo_produtos", "is_distribuicao"],
             dropna=False,
         )
         .agg(
+            nome_empresarial=("nome_empresarial", "first"),
+            uf=("uf", "first"),
+            municipio=("municipio", "first"),
             qtd_tanques=("tag", "count"),
             tancagem_total_m3=("tancagem_m3", "sum"),
             tancagem_media_m3=("tancagem_m3", "mean"),

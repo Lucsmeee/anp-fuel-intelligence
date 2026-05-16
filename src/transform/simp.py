@@ -32,6 +32,18 @@ def transform_simp() -> pd.DataFrame:
     df = pd.read_parquet(INTERIM_DIR / "simp_postos.parquet")
     logger.info("SIMP base: %d linhas", len(df))
 
+    # Remove registros cujo codigo_isimp não existe em dim_postos.
+    # Ocorre quando postos foram cancelados na ANP mas ainda aparecem no SIMP.
+    postos_validos = pd.read_parquet(PROCESSED_DIR / "dim_postos.parquet")[["codigo_isimp"]]
+    n_antes = len(df)
+    df = df[df["codigo_isimp"].isin(postos_validos["codigo_isimp"])]
+    orfaos = n_antes - len(df)
+    if orfaos:
+        logger.warning(
+            "%d linhas do SIMP removidas por codigo_isimp ausente em dim_postos "
+            "(postos cancelados na ANP)", orfaos
+        )
+
     # Agrega por posto e produto: soma tancagem e bicos
     fato = (
         df.groupby(["codigo_isimp", "produto", "produto_norm"], dropna=False)
