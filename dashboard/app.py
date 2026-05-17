@@ -84,11 +84,17 @@ SEQUENCIA = [
 def get_engine():
     # No Streamlit Cloud, credenciais vêm de st.secrets
     # Localmente, vêm do .env via src.config
+    from sqlalchemy import URL as SA_URL
     try:
         s = st.secrets
-        url = (
-            f"postgresql+psycopg2://{s['DB_USER']}:{s['DB_PASSWORD']}"
-            f"@{s['DB_HOST']}:{s['DB_PORT']}/{s['DB_NAME']}?sslmode=require"
+        url = SA_URL.create(
+            "postgresql+psycopg2",
+            username=s["DB_USER"],
+            password=s["DB_PASSWORD"],   # URL.create escapa @ e outros caracteres
+            host=s["DB_HOST"],
+            port=int(s["DB_PORT"]),
+            database=s["DB_NAME"],
+            query={"sslmode": "require"},
         )
     except (KeyError, FileNotFoundError):
         url = get_db_url()
