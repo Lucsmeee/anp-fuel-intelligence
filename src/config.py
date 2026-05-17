@@ -76,10 +76,16 @@ DB_CONFIG = {
 }
 
 
-def get_db_url() -> str:
-    """Devolve a URL de conexão PostgreSQL no formato SQLAlchemy."""
+def get_db_url(sslmode: str | None = None) -> str:
+    """Devolve a URL de conexão PostgreSQL no formato SQLAlchemy.
+
+    sslmode: se fornecido, adiciona ?sslmode=<valor> à URL.
+    Se a variável de ambiente DB_SSLMODE estiver definida, usa ela.
+    """
     c = DB_CONFIG
+    ssl = sslmode or os.getenv("DB_SSLMODE", "")
+    suffix = f"?sslmode={ssl}" if ssl else ""
     return (
         f"postgresql+psycopg2://{c['user']}:{c['password']}"
-        f"@{c['host']}:{c['port']}/{c['database']}"
+        f"@{c['host']}:{c['port']}/{c['database']}{suffix}"
     )

@@ -82,7 +82,17 @@ SEQUENCIA = [
 # =============================================================================
 @st.cache_resource(show_spinner=False)
 def get_engine():
-    return create_engine(get_db_url(), pool_pre_ping=True)
+    # No Streamlit Cloud, credenciais vêm de st.secrets
+    # Localmente, vêm do .env via src.config
+    try:
+        s = st.secrets
+        url = (
+            f"postgresql+psycopg2://{s['DB_USER']}:{s['DB_PASSWORD']}"
+            f"@{s['DB_HOST']}:{s['DB_PORT']}/{s['DB_NAME']}?sslmode=require"
+        )
+    except (KeyError, FileNotFoundError):
+        url = get_db_url()
+    return create_engine(url, pool_pre_ping=True)
 
 
 @st.cache_data(ttl=3600, show_spinner="Carregando dados...")
