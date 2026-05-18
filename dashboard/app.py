@@ -22,7 +22,7 @@ from src.config import get_db_url  # noqa: E402
 # Configuração da página
 # =============================================================================
 st.set_page_config(
-    page_title="ANP Fuel Intelligence — Rede São Roque",
+    page_title="ANP Fuel Intelligence",
     page_icon="⛽",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -332,7 +332,7 @@ _BAR_TEXTFONT = dict(size=14, color="#FFFFFF")
 st.markdown(
     """
     <div class="bloco-titulo">
-      <h2>⛽ ANP Fuel Intelligence — Rede São Roque</h2>
+      <h2>⛽ ANP Fuel Intelligence</h2>
       <p>Análise da infraestrutura de distribuição de combustíveis no Brasil
          · Dados públicos ANP e IBGE · Referência: abril/2026</p>
     </div>
@@ -775,5 +775,5 @@ st.caption(
     "Fontes: ANP — Cadastro de Revendedores Varejistas, Distribuidores, "
     "Tancagem do Abastecimento Nacional e SIMP (abril/2026). "
     "IBGE — Estimativas populacionais 2025. "
-    "Desenvolvido com Python, PostgreSQL e Streamlit · Rede São Roque."
+    "Desenvolvido com Python, PostgreSQL e Streamlit."
 )
